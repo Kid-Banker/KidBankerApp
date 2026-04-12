@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { EyeOff, Eye, CalendarDays, Wallet, Check, X, ChevronRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import { EyeOff, Eye, CalendarDays, Wallet, Check, X, ChevronRight, AlertCircle, CheckCircle2, UserRound } from "lucide-react";
 import parentService from "../../services/parentService";
 
 function formatRupiah(num) {
@@ -34,12 +34,15 @@ export default function PaylaterPage() {
     error: "",
   });
 
+  const [profile, setProfile] = useState({});
+
   // Ambil data paylater secara paralel
   const fetchAll = async () => {
     const results = await Promise.allSettled([
       parentService.getPaylaterStatus(),
       parentService.getPaylaterReminder(),
       parentService.getPaylaterOverview(),
+      parentService.getProfile({ skipGlobalErrorHandler: true }),
     ]);
 
     if (results[0].status === "fulfilled") {
@@ -56,6 +59,8 @@ export default function PaylaterPage() {
         setPaylaters(Array.isArray(val) ? val : []);
       }
     }
+    if (results[3]?.status === "fulfilled") setProfile(results[3].value);
+
     setLoading(false);
   };
 
@@ -131,6 +136,27 @@ export default function PaylaterPage() {
 
   return (
     <div className="min-h-screen">
+      {/* Mobile Profile Header */}
+      <div className="dash:hidden mb-6 flex flex-col gap-2">
+        <div className="flex items-center gap-3">
+          <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden shrink-0">
+            {profile.photo ? (
+              <img src={profile.photo} relative="true" alt="profile" className="w-full h-full object-cover" />
+            ) : (
+              <UserRound className="w-8 h-8 text-gray-500" />
+            )}
+          </div>
+          <div className="flex flex-col">
+            <h2 className="font-bold text-gray-800 text-[18px] leading-tight">{profile.name || "Parent Name"}</h2>
+          </div>
+        </div>
+        
+        <div className="mt-2 text-sm text-gray-500">
+           <p>Kid Name : {profile.kid_name || "-"}</p>
+           <p>Parent Code : {profile.parent_code && profile.parent_code !== "-" ? profile.parent_code : "-"}</p>
+        </div>
+      </div>
+
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Pay Later</h1>
         <p className="text-sm text-gray-400 mt-1">Traces of your kid saving adventure today</p>
@@ -138,7 +164,7 @@ export default function PaylaterPage() {
 
       <div className="grid grid-cols-12 gap-5 mb-5">
         {/* Kartu status paylater */}
-        <div className="col-span-6 bg-white rounded-2xl border border-gray-100 p-6 h-52 flex flex-col justify-between">
+        <div className="col-span-12 dash:col-span-6 bg-white rounded-2xl border border-gray-100 p-6 h-52 flex flex-col justify-between">
           {loading ? (
             <div className="animate-pulse"><div className="h-4 bg-gray-200 rounded w-28 mb-8"></div><div className="h-3 bg-gray-200 rounded w-24 mb-2"></div><div className="h-8 bg-gray-200 rounded w-10 mb-6"></div><div className="space-y-2"><div className="h-5 bg-gray-200 rounded w-32"></div><div className="h-5 bg-gray-200 rounded w-32"></div></div></div>
           ) : (
@@ -157,7 +183,7 @@ export default function PaylaterPage() {
         </div>
 
         {/* Kartu reminder paylater */}
-        <div className="col-span-6 bg-white rounded-2xl border border-gray-100 p-6 h-52 flex flex-col justify-between">
+        <div className="col-span-12 dash:col-span-6 bg-white rounded-2xl border border-gray-100 p-6 h-52 flex flex-col justify-between">
           {loading ? (
             <div className="animate-pulse"><div className="h-4 bg-gray-200 rounded w-32 mb-8"></div><div className="h-3 bg-gray-200 rounded w-20 mb-2"></div><div className="h-7 bg-gray-200 rounded w-44 mb-6"></div><div className="space-y-2"><div className="h-5 bg-gray-200 rounded w-36"></div><div className="h-5 bg-gray-200 rounded w-40"></div></div></div>
           ) : (
@@ -180,7 +206,8 @@ export default function PaylaterPage() {
       </div>
 
       {/* Tabel daftar paylater dengan aksi approve/reject */}
-      <div className="bg-white rounded-2xl border border-gray-100">
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-gray-100">
@@ -236,6 +263,7 @@ export default function PaylaterPage() {
             )}
           </tbody>
         </table>
+        </div>
 
         {!loading && pagination.last_page > 1 && (
           <div className="flex justify-between items-center px-6 py-4 border-t border-gray-100">

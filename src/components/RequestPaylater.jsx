@@ -41,45 +41,47 @@ export default function RequestPaylater({ data = [], loading }) {
   return (
     <div className="bg-white p-6 rounded-2xl border border-gray-100">
       <p className="text-sm font-semibold text-gray-800 mb-4">Request Paylater</p>
-      <table className="w-full text-left">
-        <thead>
-          <tr className="text-xs text-gray-400 border-b border-gray-100">
-            <th className="pb-3 font-medium">Description</th>
-            <th className="pb-3 font-medium text-center">Status</th>
-            <th className="pb-3 font-medium text-right">Requested At</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-50">
-          {Array.isArray(data) && data.length > 0 ? (
-            data.map((item, i) => (
-              <tr key={i}>
-                <td className="py-3.5">
-                  <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 bg-gray-50 rounded-lg">
-                      <Wallet size={14} className="text-gray-400" />
+      <div className="overflow-x-auto w-full">
+        <table className="w-full text-left min-w-[400px]">
+          <thead>
+            <tr className="text-xs text-gray-400 border-b border-gray-100">
+              <th className="pb-3 font-medium">Description</th>
+              <th className="pb-3 font-medium text-center">Status</th>
+              <th className="pb-3 font-medium text-right">Requested At</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-50">
+            {Array.isArray(data) && data.length > 0 ? (
+              data.map((item, i) => (
+                <tr key={i}>
+                  <td className="py-3.5">
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-1.5 bg-gray-50 rounded-lg shrink-0">
+                        <Wallet size={14} className="text-gray-400" />
+                      </div>
+                      <span className="text-xs text-gray-700 font-medium whitespace-nowrap">{item.name}</span>
                     </div>
-                    <span className="text-xs text-gray-700 font-medium">{item.name}</span>
-                  </div>
-                </td>
-                <td className="py-3.5 text-center">
-                  <span className={`px-3 py-1 rounded text-[10px] font-bold tracking-wide border ${getStatusColor(item.status)}`}>
-                    {item.status}
-                  </span>
-                </td>
-                <td className="py-3.5 text-right text-xs text-gray-500">
-                  {formatDate(item.created_at || item.deadline)}
+                  </td>
+                  <td className="py-3.5 text-center px-4">
+                    <span className={`px-3 py-1 rounded text-[10px] font-bold tracking-wide border whitespace-nowrap ${getStatusColor(item.status)}`}>
+                      {item.status}
+                    </span>
+                  </td>
+                  <td className="py-3.5 text-right text-xs text-gray-500 whitespace-nowrap">
+                    {formatDate(item.created_at || item.deadline)}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={3} className="text-center text-gray-400 py-6 text-xs">
+                  No paylater requests
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={3} className="text-center text-gray-400 py-6 text-xs">
-                No paylater requests
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

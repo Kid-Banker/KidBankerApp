@@ -3,6 +3,7 @@
 
 @theme {
     --font-jakarta: 'Plus Jakarta Sans Variable', sans-serif;
+    --breakpoint-dash: 990px;
 }
 
 html,

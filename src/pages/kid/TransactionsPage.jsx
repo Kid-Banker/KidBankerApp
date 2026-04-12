@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Wallet, ChevronRight } from "lucide-react";
+import { Wallet, ChevronRight, UserRound } from "lucide-react";
 import kidService from "../../services/kidService";
 
 function formatRupiah(num) {
@@ -20,14 +20,26 @@ export default function TransactionsPage() {
     last_page: 1, has_next_page: false, has_prev_page: false,
   });
   const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState({});
 
   // Ambil data transaksi dengan pagination
   const fetchTransactions = async (page = 1) => {
     setLoading(true);
     try {
-      const data = await kidService.getTransactions(page, 10);
-      setTransactions(data.data || []);
-      setPagination(data.pagination || {});
+      const results = await Promise.allSettled([
+        kidService.getTransactions(page, 10),
+        kidService.getProfile({ skipGlobalErrorHandler: true })
+      ]);
+      
+      if (results[0].status === "fulfilled") {
+        setTransactions(results[0].value.data || []);
+        setPagination(results[0].value.pagination || {});
+      } else {
+        setTransactions([]);
+      }
+      if (results[1].status === "fulfilled") {
+        setProfile(results[1].value);
+      }
     } catch {
       setTransactions([]);
     }
@@ -61,12 +73,34 @@ export default function TransactionsPage() {
 
   return (
     <div className="min-h-screen">
+      {/* Mobile Profile Header */}
+      <div className="dash:hidden mb-6 flex flex-col gap-2">
+        <div className="flex items-center gap-3">
+          <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden shrink-0">
+            {profile.photo ? (
+              <img src={profile.photo} relative="true" alt="profile" className="w-full h-full object-cover" />
+            ) : (
+              <UserRound className="w-8 h-8 text-gray-500" />
+            )}
+          </div>
+          <div className="flex flex-col">
+            <h2 className="font-bold text-gray-800 text-[18px] leading-tight">{profile.name || "Kid Name"}</h2>
+          </div>
+        </div>
+        
+        <div className="mt-2 text-sm text-gray-500">
+           <p>Parent Name : {profile.parent_name || "-"}</p>
+           <p>Parent Code : {profile.parent_code && profile.parent_code !== "-" ? profile.parent_code : "-"}</p>
+        </div>
+      </div>
+
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Transactions</h1>
         <p className="text-sm text-gray-400 mt-1">Traces of your saving adventure today</p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100">
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-gray-100">
@@ -111,6 +145,7 @@ export default function TransactionsPage() {
                   ))}
           </tbody>
         </table>
+        </div>
 
         {!loading && (
           <div className="flex justify-between items-center px-6 py-4 border-t border-gray-100">

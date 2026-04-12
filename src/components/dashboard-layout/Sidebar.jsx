@@ -64,7 +64,7 @@ const Sidebar = ({ user, onLogout }) => {
   };
 
   return (
-    <div className="w-2/12 h-screen bg-white border-r-2 border-gray-100 flex flex-col font-sans select-none overflow-y-auto">
+    <div className="w-full h-screen bg-white border-r-2 border-gray-100 flex flex-col font-sans select-none overflow-y-auto">
       <div className="px-4 py-4 flex items-center gap-2">
         <img src={logo} alt="Logo" className="w-12 h-12 object-contain" />
         <div>

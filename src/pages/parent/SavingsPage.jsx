@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Wallet, ChevronRight } from "lucide-react";
+import { Wallet, ChevronRight, UserRound } from "lucide-react";
 import parentService from "../../services/parentService";
 import SavingCard from "../../components/SavingCard";
 import WeeklyReportCard from "../../components/WeeklyReportCard";
@@ -27,6 +27,7 @@ export default function SavingsPage() {
     last_page: 1, has_next_page: false, has_prev_page: false,
   });
   const [tableLoading, setTableLoading] = useState(true);
+  const [profile, setProfile] = useState({});
 
   // Ambil data kartu & tabel secara paralel
   useEffect(() => {
@@ -36,6 +37,7 @@ export default function SavingsPage() {
         parentService.getWeeklyReport(),
         parentService.getMonthlyReport(),
         parentService.getTransactions(1, 10),
+        parentService.getProfile({ skipGlobalErrorHandler: true }),
       ]);
       if (results[0].status === "fulfilled") setSavings(results[0].value);
       if (results[1].status === "fulfilled") setWeekly(results[1].value);
@@ -44,6 +46,7 @@ export default function SavingsPage() {
         setTransactions(results[3].value.data || []);
         setPagination(results[3].value.pagination || {});
       }
+      if (results[4]?.status === "fulfilled") setProfile(results[4].value);
       setLoading(false);
       setTableLoading(false);
     }
@@ -80,24 +83,46 @@ export default function SavingsPage() {
 
   return (
     <div className="min-h-screen">
+      {/* Mobile Profile Header */}
+      <div className="dash:hidden mb-6 flex flex-col gap-2">
+        <div className="flex items-center gap-3">
+          <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden shrink-0">
+            {profile.photo ? (
+              <img src={profile.photo} relative="true" alt="profile" className="w-full h-full object-cover" />
+            ) : (
+              <UserRound className="w-8 h-8 text-gray-500" />
+            )}
+          </div>
+          <div className="flex flex-col">
+            <h2 className="font-bold text-gray-800 text-[18px] leading-tight">{profile.name || "Parent Name"}</h2>
+          </div>
+        </div>
+        
+        <div className="mt-2 text-sm text-gray-500">
+           <p>Kid Name : {profile.kid_name || "-"}</p>
+           <p>Parent Code : {profile.parent_code && profile.parent_code !== "-" ? profile.parent_code : "-"}</p>
+        </div>
+      </div>
+
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Finance</h1>
         <p className="text-sm text-gray-400 mt-1">Traces of your kid saving adventure today</p>
       </div>
 
       <div className="grid grid-cols-12 gap-5 mb-5">
-        <div className="col-span-4">
+        <div className="col-span-12 dash:col-span-4">
           <SavingCard title="Your Kid Savings" total_balance={savings?.total_balance} last_income={savings?.last_earned} last_expense={savings?.last_spent} loading={loading} />
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 dash:col-span-4">
           <WeeklyReportCard thisWeek={weekly?.this_week} incomeCount={weekly?.income_count} difference={weekly?.difference} status={weekly?.status} loading={loading} />
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 dash:col-span-4">
           <MonthlyReportCard thisMonth={monthly?.this_month} incomeCount={monthly?.income_count} difference={monthly?.difference} status={monthly?.status} loading={loading} />
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100">
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-gray-100">
@@ -136,6 +161,7 @@ export default function SavingsPage() {
                   ))}
           </tbody>
         </table>
+        </div>
 
         {!tableLoading && (
           <div className="flex justify-between items-center px-6 py-4 border-t border-gray-100">

@@ -206,7 +206,7 @@ function Login() {
       <section className="min-h-screen flex flex-col items-center justify-center mb-20 bg-[#F9F9FA]">
         <div className="flex flex-col items-center justify-center gap-y-4">
           <img className="w-50" src={logo} alt="logo" />
-          <h1 className="text-3xl font-bold">Start Your Saving Adventure!</h1>
+          <h1 className="text-3xl font-bold text-center">Start Your Saving Adventure!</h1>
           <p className="max-w-75 text-center">
             Learning to save, supported by parents. A smarter way to handle
             pocket money.
