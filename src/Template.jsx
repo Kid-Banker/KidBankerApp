@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, ScrollRestoration } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 
@@ -15,6 +15,7 @@ export default function Template() {
 
   return (
     <>
+      <ScrollRestoration />
       <section className="overflow-x-hidden w-full bg-[#F9F9FA]">
         <Navbar variant={config} />
         <Outlet />
