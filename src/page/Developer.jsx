@@ -1,4 +1,9 @@
 import Footer from "../components/Footer";
+import Dimas from "../assets/team/kid-banker-dimas.png";
+import Cahyo from "../assets/team/kid-banker-cahyo.png";
+import Langga from "../assets/team/kid-banker-langga.png";
+import Eka from "../assets/team/kid-banker-eka.png";
+import Cara from "../assets/team/kid-banker-cara.png";
 
 function Developer() {
   return (
@@ -22,7 +27,7 @@ function Developer() {
           <div className="rounded-xl p-6 text-left">
             <div className="flex items-center justify-center">
               <img
-                src="/src/assets/team/Kid Banker - Muhammad Dimas Susilo.png"
+                src={Dimas}
                 alt="Team"
                 className="w-40 md:w-[250px] mb-6"
               />
@@ -37,7 +42,7 @@ function Developer() {
           <div className="rounded-xl p-6 text-left">
             <div className="flex items-center justify-center">
               <img
-                src="/src/assets/team/Kid Banker - Andika Satrio Nurcahyo.png"
+                src={Cahyo}
                 alt="Team"
                 className="w-40 md:w-[250px] mb-6"
               />
@@ -54,7 +59,7 @@ function Developer() {
           <div className="rounded-xl p-6 text-left">
             <div className="flex items-center justify-center">
               <img
-                src="/src/assets/team/Kid Banker - Air Langga Ali Syahbani.png"
+                src={Langga}
                 alt="Team"
                 className="w-40 md:w-[250px] mb-6"
               />
@@ -71,7 +76,7 @@ function Developer() {
             <div className="w-full md:w-1/3 rounded-xl p-6 text-left">
               <div className="flex items-center justify-center">
                 <img
-                  src="/src/assets/team/Kid Banker - Eka Nurfitria Septiani.png"
+                  src={Eka}
                   alt="Team"
                   className="w-40 md:w-[250px] mb-6"
                 />
@@ -86,7 +91,7 @@ function Developer() {
             <div className="w-full md:w-1/3 rounded-xl p-6 text-left">
               <div className="flex items-center justify-center">
                 <img
-                  src="/src/assets/team/Kid Banker - Ni Made Ayu Carasia Susanti.png"
+                  src={Cara}
                   alt="Team"
                   className="w-40 md:w-[250px] mb-6"
                 />

@@ -1,10 +1,12 @@
+import Error500Img from "../assets/500.png";
+
 function Error500() {
   return (
     <>
       <section className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-center px-4">
         {/* Image */}
         <img
-          src="/src/assets/500_Connection - Kid Banker.png"
+          src={Error500Img}
           alt="500 Illustration"
           className="w-133 md:w-[400px] mb-8"
         />

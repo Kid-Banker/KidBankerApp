@@ -1,4 +1,5 @@
 import ButtonComp from "../components/ButtonComp";
+import Error403Img from "../assets/401-403.png";
 
 function Error403() {
   return (
@@ -6,7 +7,7 @@ function Error403() {
       <section className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-center px-4">
         {/* Image */}
         <img
-          src="/src/assets/401_403 - Kid Banker.png"
+          src={Error403Img}
           alt="403 Illustration"
           className="w-133 md:w-[400px] mb-8"
         />
