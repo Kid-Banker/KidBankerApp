@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { EyeOff, Eye, CalendarDays, Wallet, Check, X, ChevronRight } from "lucide-react";
+import { EyeOff, Eye, CalendarDays, Wallet, Check, X, ChevronRight, AlertCircle, CheckCircle2 } from "lucide-react";
 import parentService from "../../services/parentService";
 
 function formatRupiah(num) {
@@ -22,6 +22,16 @@ export default function PaylaterPage() {
   const [pagination, setPagination] = useState({
     total: 0, per_page: 10, current_page: 1,
     last_page: 1, has_next_page: false, has_prev_page: false,
+  });
+
+  // State modal konfirmasi approve/reject
+  const [modal, setModal] = useState({
+    open: false,
+    type: "", // "approve" | "reject"
+    item: null,
+    loading: false,
+    success: "",
+    error: "",
   });
 
   // Ambil data paylater secara paralel
@@ -51,22 +61,52 @@ export default function PaylaterPage() {
 
   useEffect(() => { fetchAll(); }, []);
 
-  // Aksi approve paylater
-  const handleApprove = async (id) => {
-    try {
-      await parentService.approvePaylater(id);
-      setLoading(true);
-      fetchAll();
-    } catch { /* ditangani interceptor */ }
+  // Buka modal konfirmasi
+  const openModal = (type, item) => {
+    setModal({ open: true, type, item, loading: false, success: "", error: "" });
   };
 
-  // Aksi reject paylater
-  const handleReject = async (id) => {
+  // Tutup modal dan reset state
+  const closeModal = () => {
+    setModal({ open: false, type: "", item: null, loading: false, success: "", error: "" });
+  };
+
+  // Eksekusi aksi approve/reject dari modal
+  const handleConfirm = async () => {
+    const { type, item } = modal;
+    if (!item) return;
+
+    setModal((prev) => ({ ...prev, loading: true, error: "" }));
+
     try {
-      await parentService.rejectPaylater(id);
+      if (type === "approve") {
+        await parentService.approvePaylater(item.id);
+        setModal((prev) => ({
+          ...prev,
+          loading: false,
+          success: "Paylater has been approved successfully and a reminder has been added to Google Calendar.",
+        }));
+      } else {
+        await parentService.rejectPaylater(item.id);
+        setModal((prev) => ({
+          ...prev,
+          loading: false,
+          success: "Paylater has been rejected successfully.",
+        }));
+      }
+      // Refresh data di background
       setLoading(true);
       fetchAll();
-    } catch { /* ditangani interceptor */ }
+
+      // Tutup modal otomatis setelah 2.5 detik
+      setTimeout(() => { closeModal(); }, 2500);
+    } catch (err) {
+      setModal((prev) => ({
+        ...prev,
+        loading: false,
+        error: err.response?.data?.message || `Failed to ${type} paylater. Please try again.`,
+      }));
+    }
   };
 
   const handlePageChange = (page) => {
@@ -184,8 +224,8 @@ export default function PaylaterPage() {
                   <td className="py-4 px-6 text-center">
                     {item.status === "PENDING" ? (
                       <div className="flex gap-2 justify-center">
-                        <button className="w-7 h-7 bg-green-50 hover:bg-green-100 border border-green-200 rounded-lg flex items-center justify-center text-green-600 transition-colors" onClick={() => handleApprove(item.id)} title="Approve"><Check size={14} /></button>
-                        <button className="w-7 h-7 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg flex items-center justify-center text-red-500 transition-colors" onClick={() => handleReject(item.id)} title="Reject"><X size={14} /></button>
+                        <button className="w-7 h-7 bg-green-50 hover:bg-green-100 border border-green-200 rounded-lg flex items-center justify-center text-green-600 transition-colors" onClick={() => openModal("approve", item)} title="Approve"><Check size={14} /></button>
+                        <button className="w-7 h-7 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg flex items-center justify-center text-red-500 transition-colors" onClick={() => openModal("reject", item)} title="Reject"><X size={14} /></button>
                       </div>
                     ) : (
                       <span className="text-xs text-gray-400">-</span>
@@ -207,6 +247,114 @@ export default function PaylaterPage() {
           </div>
         )}
       </div>
+
+      {/* Modal konfirmasi approve/reject */}
+      {modal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => { if (!modal.loading) closeModal(); }} />
+
+          {/* Konten modal */}
+          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6 animate-[fadeIn_0.2s_ease-out]">
+            {/* Tampilan sukses */}
+            {modal.success ? (
+              <div className="flex flex-col items-center text-center py-4">
+                <div className="w-14 h-14 rounded-full bg-green-50 flex items-center justify-center mb-4">
+                  <CheckCircle2 className="w-7 h-7 text-green-500" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Success</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">{modal.success}</p>
+              </div>
+            ) : (
+              <>
+                {/* Header modal */}
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="text-lg font-bold text-gray-900">
+                    {modal.type === "approve" ? "Approve Paylater" : "Reject Paylater"}
+                  </h3>
+                  <button
+                    onClick={closeModal}
+                    disabled={modal.loading}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 transition-colors disabled:opacity-50"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+
+                {/* Detail paylater */}
+                <div className="bg-gray-50 rounded-xl p-4 mb-5 space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-xs text-gray-400">Description</span>
+                    <span className="text-xs font-semibold text-gray-700">{modal.item?.name || "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-xs text-gray-400">Amount</span>
+                    <span className="text-xs font-semibold text-gray-700">{formatRupiah(modal.item?.amount)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-xs text-gray-400">Due Date</span>
+                    <span className="text-xs font-semibold text-gray-700">{formatDate(modal.item?.deadline)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-xs text-gray-400">Current Status</span>
+                    <span className="px-3 py-0.5 rounded text-[10px] font-bold tracking-wide bg-amber-50 text-amber-600 border border-amber-100">PENDING</span>
+                  </div>
+                </div>
+
+                {/* Pesan konfirmasi */}
+                <p className="text-sm text-gray-500 mb-5">
+                  {modal.type === "approve"
+                    ? "Are you sure you want to approve this paylater request? A reminder will be added to Google Calendar."
+                    : "Are you sure you want to reject this paylater request? This action cannot be undone."}
+                </p>
+
+                {/* Pesan error */}
+                {modal.error && (
+                  <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-lg px-4 py-3 mb-5">
+                    <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+                    <p className="text-xs text-red-600">{modal.error}</p>
+                  </div>
+                )}
+
+                {/* Tombol aksi */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={closeModal}
+                    disabled={modal.loading}
+                    className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleConfirm}
+                    disabled={modal.loading}
+                    className={`flex-1 px-4 py-2.5 text-sm font-medium text-white rounded-xl transition-colors disabled:opacity-60 flex items-center justify-center gap-2 ${
+                      modal.type === "approve"
+                        ? "bg-blue-500 hover:bg-blue-600"
+                        : "bg-red-500 hover:bg-red-600"
+                    }`}
+                  >
+                    {modal.loading ? (
+                      <>
+                        <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                        </svg>
+                        Processing...
+                      </>
+                    ) : modal.type === "approve" ? (
+                      "Approve"
+                    ) : (
+                      "Reject"
+                    )}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
