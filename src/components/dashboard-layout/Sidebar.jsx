@@ -8,6 +8,7 @@ import {
   LogOut,
   Users,
   ScanLine,
+  UserRound,
 } from "lucide-react";
 
 import kidService from "../../services/kidService";
@@ -81,11 +82,9 @@ const Sidebar = ({ user, onLogout }) => {
       <div className="p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="relative">
-            <img
-              src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=100&auto=format&fit=crop"
-              alt="Profile"
-              className="w-12 h-12 rounded-full object-cover"
-            />
+            <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+              <UserRound className="w-7 h-7 text-gray-500" />
+            </div>
           </div>
           <p className="text-sm font-bold text-gray-800 leading-snug">
             {profile.name || user?.name || (isParent ? "Parent Name" : "Kid Name")}
