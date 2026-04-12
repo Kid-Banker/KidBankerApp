@@ -17,11 +17,11 @@ export default function QuickActionCard({ onSuccess }) {
     setSuccess("");
 
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-      setError("Amount harus berupa angka > 0");
+      setError("Amount must be a number > 0");
       return;
     }
     if (!description.trim()) {
-      setError("Description tidak boleh kosong");
+      setError("Description cannot be empty");
       return;
     }
 
@@ -32,12 +32,12 @@ export default function QuickActionCard({ onSuccess }) {
         amount: Number(amount),
         description,
       });
-      setSuccess("Transaksi berhasil ditambahkan!");
+      setSuccess("Transaction added successfully!");
       setAmount("");
       setDescription("");
       if (onSuccess) onSuccess();
     } catch (e) {
-      setError(e.response?.data?.message || "Gagal terhubung ke server");
+      setError(e.response?.data?.message || "Failed to connect to the server");
     }
     setLoading(false);
   };

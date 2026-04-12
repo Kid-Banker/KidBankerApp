@@ -120,7 +120,7 @@ function SelectKids() {
     const parentCode = codeInput.join("");
 
     if (parentCode.length < 6) {
-      setError("Masukkan kode lengkap dulu");
+      setError("Please enter the complete code first");
       return;
     }
 

@@ -64,16 +64,19 @@ export default function PaylaterPage() {
     e.preventDefault();
     setFormError("");
     setFormSuccess("");
-    if (!amount || !deadline || !desc) { setFormError("Semua field wajib diisi"); return; }
+    if (!amount || !deadline || !desc) {
+      setFormError("All fields are required");
+      return;
+    }
     setFormLoading(true);
     try {
       await kidService.requestPaylater({ name: desc, description: desc, amount: Number(amount), deadline });
-      setFormSuccess("Request paylater berhasil!");
+      setFormSuccess("Paylater request successful!");
       setAmount(""); setDeadline(""); setDesc("");
       setLoading(true);
       fetchAll();
     } catch (err) {
-      setFormError(err.response?.data?.message || "Gagal request paylater");
+      setFormError(err.response?.data?.message || "Failed to request paylater");
     }
     setFormLoading(false);
   };
