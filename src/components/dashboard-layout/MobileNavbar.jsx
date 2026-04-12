@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from "../../assets/logo.png";
-import { Menu, X, LayoutDashboard, Wallet, Receipt, LogOut } from "lucide-react";
+import { Menu, X, LayoutDashboard, Wallet, Receipt, LogOut, ArrowRightLeft } from "lucide-react";
 
 const MobileNavbar = ({ user, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,7 +15,8 @@ const MobileNavbar = ({ user, onLogout }) => {
   useEffect(() => {
     const path = location.pathname;
     if (path.includes("paylater")) setActiveTab("paylater");
-    else if (path.includes("savings") || path.includes("transactions")) setActiveTab("finance");
+    else if (path.includes("transactions")) setActiveTab("transactions");
+    else if (path.includes("savings")) setActiveTab("finance");
     else setActiveTab("dashboard");
   }, [location.pathname]);
 
@@ -24,11 +25,18 @@ const MobileNavbar = ({ user, onLogout }) => {
     navigate(baseUrl);
   };
 
-  const navItems = [
-    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: baseUrl, action: goToDashboard },
-    { id: "finance", label: "Finance", icon: Wallet, path: `${baseUrl}/savings` },
-    { id: "paylater", label: "Pay Later", icon: Receipt, path: `${baseUrl}/paylater` },
-  ];
+  const navItems = isParent
+    ? [
+        { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: baseUrl, action: goToDashboard },
+        { id: "finance", label: "Finance", icon: Wallet, path: `${baseUrl}/savings` },
+        { id: "paylater", label: "Pay Later", icon: Receipt, path: `${baseUrl}/paylater` },
+      ]
+    : [
+        { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: baseUrl, action: goToDashboard },
+        { id: "finance", label: "Savings", icon: Wallet, path: `${baseUrl}/savings` },
+        { id: "transactions", label: "Transactions", icon: ArrowRightLeft, path: `${baseUrl}/transactions` },
+        { id: "paylater", label: "Pay Later", icon: Receipt, path: `${baseUrl}/paylater` },
+      ];
 
   return (
     <div className="dash:hidden relative z-50">
