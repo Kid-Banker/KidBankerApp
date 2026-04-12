@@ -34,7 +34,7 @@ function Landing() {
 
   return (
     <section className="min-h-screen overflow-x-hidden bg-[#F9F9FA]">
-      <section className="flex flex-col-reverse md:flex-row h-auto items-center justify-center md:justify-end gap-10 md:gap-x-80 pt-32 md:pt-20 px-6 md:px-0 text-center md:text-left">
+      <section className="flex flex-col-reverse md:flex-row h-auto items-center justify-between gap-10 pt-32 md:pt-20 pl-6 md:pl-16 lg:pl-32 xl:pl-40 pr-0 w-full text-center md:text-left">
         <div className="flex flex-col items-center md:items-start">
           <h1 className="text-4xl md:text-5xl max-w-lg font-bold leading-snug">
             Smart Financial Management for Young Generation
@@ -144,7 +144,7 @@ function Landing() {
       </section>
 
       <section className="py-12 md:py-20 px-6 md:px-0 flex justify-center">
-        <div className="bg-[#262626] w-full text-white text-center p-8 md:p-10 max-w-8xl md:px-100 rounded-lg">
+        <div className="bg-[#262626] w-full md:w-5/6 max-w-7xl text-white text-center p-8 md:p-16 rounded-lg">
           <h2 className="text-2xl md:text-3xl font-semibold mb-4 md:mb-6">
             Bridging the Gap to <br className="hidden md:block" /> Financial Literacy
           </h2>
