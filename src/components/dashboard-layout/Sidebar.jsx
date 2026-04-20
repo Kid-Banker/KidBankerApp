@@ -14,6 +14,14 @@ import {
 import kidService from "../../services/kidService";
 import parentService from "../../services/parentService";
 
+const getInitials = (name) => {
+  if (!name) return "";
+  const words = name.trim().split(/\s+/);
+  if (words.length === 0) return "";
+  if (words.length === 1) return words[0][0].toUpperCase();
+  return (words[0][0] + words[1][0]).toUpperCase();
+};
+
 const Sidebar = ({ user, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeMainTab, setActiveMainTab] = useState("dashboard");
@@ -82,9 +90,23 @@ const Sidebar = ({ user, onLogout }) => {
       <div className="p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="relative">
-            <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-              <UserRound className="w-7 h-7 text-gray-500" />
-            </div>
+            {profile.profile_picture ? (
+              <img
+                src={profile.profile_picture}
+                alt="Profile"
+                className="w-12 h-12 rounded-full object-cover border-2 border-blue-50"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center overflow-hidden">
+                <span className="text-white font-bold text-lg">
+                  {getInitials(
+                    profile.name ||
+                      user?.name ||
+                      (isParent ? "Parent" : "Kid")
+                  )}
+                </span>
+              </div>
+            )}
           </div>
           <p className="text-sm font-bold text-gray-800 leading-snug">
             {profile.name || user?.name || (isParent ? "Parent Name" : "Kid Name")}
