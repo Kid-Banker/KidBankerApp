@@ -89,12 +89,12 @@ const Sidebar = ({ user, onLogout }) => {
 
       <div className="p-6">
         <div className="flex items-center gap-3 mb-6">
-          <div className="relative">
+          <div className="relative shrink-0">
             {profile.profile_picture ? (
               <img
                 src={profile.profile_picture}
                 alt="Profile"
-                className="w-12 h-12 rounded-full object-cover border-2 border-blue-50"
+                className="w-12 h-12 object-cover rounded-full border-2 border-blue-50"
               />
             ) : (
               <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center overflow-hidden">
